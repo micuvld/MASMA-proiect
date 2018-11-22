@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.106
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MASMA-proiect", "MASMA-proiect\MASMA-proiect.csproj", "{CF26D350-D252-4BE2-AD0D-02BD5595695D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CF26D350-D252-4BE2-AD0D-02BD5595695D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF26D350-D252-4BE2-AD0D-02BD5595695D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF26D350-D252-4BE2-AD0D-02BD5595695D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF26D350-D252-4BE2-AD0D-02BD5595695D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9F7BA76F-7A77-4E39-A4EE-9C6E57175999}
+	EndGlobalSection
+EndGlobal
