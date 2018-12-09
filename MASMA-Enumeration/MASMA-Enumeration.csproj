@@ -7,7 +7,7 @@
     <ProjectGuid>{7E25747B-B21D-4A1B-A1F2-B51194998B86}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>MASMA_Enumeration</RootNamespace>
-    <AssemblyName>MASMA_Enumeration</AssemblyName>
+    <AssemblyName>MASMA-Enumeration</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ActressMas">
+      <HintPath>..\..\..\L3\Vickery\ActressMas.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -75,6 +78,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="agents\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

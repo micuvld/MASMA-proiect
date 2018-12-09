@@ -7,7 +7,7 @@
     <ProjectGuid>{A03DAB0C-73A4-4DA7-ACC7-EABC2B7E0226}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>MASMA_Parallel_Merge</RootNamespace>
-    <AssemblyName>MASMA_Parallel_Merge</AssemblyName>
+    <AssemblyName>MASMA-Parallel-Merge</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

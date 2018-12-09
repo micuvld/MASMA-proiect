@@ -7,7 +7,7 @@
     <ProjectGuid>{11C4F804-E3CC-4BA0-9854-55577E0F4165}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>MASMA_Odd_Even</RootNamespace>
-    <AssemblyName>MASMA_Odd_Even</AssemblyName>
+    <AssemblyName>MASMA-Odd-Even</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
