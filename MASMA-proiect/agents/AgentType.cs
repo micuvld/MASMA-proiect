@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace MASMA_proiect.agents
 {
-    public enum Actions
+    public enum AgentType
     {
-        COMPARE,
-        COMPARISON_RESULT,
-        ENUMERATE,
-        ENUMARTION_RESULT
+        COMPARATOR,
+        ENUMERATOR,
+        MASTER
     }
 }

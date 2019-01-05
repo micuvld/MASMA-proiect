@@ -50,7 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="agents\Actions.cs" />
+    <Compile Include="agents\AgentsManager.cs" />
+    <Compile Include="agents\AgentType.cs" />
     <Compile Include="agents\ComparatorAgent.cs" />
+    <Compile Include="agents\WorkerAgent.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -32,5 +32,10 @@ namespace MASMA_proiect.agents
                 this.Send(message.Sender, Actions.COMPARISON_RESULT + "#" + sortedValues);
             }
         }
+
+        public static string serialize(int a, int b)
+        {
+            return MASMA_proiect.agents.Actions.COMPARE + "#" + a + "," + b;
+        }
     }
 }
