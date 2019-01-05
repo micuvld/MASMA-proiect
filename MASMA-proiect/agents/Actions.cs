@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MASMA_proiect.agents
 {
-    enum Actions
+    public enum Actions
     {
         COMPARE,
         COMPARISON_RESULT,

@@ -7,7 +7,7 @@ using ActressMas;
 
 namespace MASMA_proiect.agents
 {
-    class ComparatorAgent : ActressMas.Agent
+    public class ComparatorAgent : ActressMas.Agent
     {
         public override void Act(Message message)
         {
@@ -15,7 +15,7 @@ namespace MASMA_proiect.agents
             string action = splittedMessage[0];
             string[] parameters = splittedMessage[1].Split(',');
 
-            if (action.Equals(Actions.COMPARE))
+            if (action.Equals(Actions.COMPARE.ToString()))
             {
                 int firstValue = Int32.Parse(parameters[0]);
                 int secondValue = Int32.Parse(parameters[1]);
