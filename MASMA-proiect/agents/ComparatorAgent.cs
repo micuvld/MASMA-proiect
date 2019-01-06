@@ -37,5 +37,10 @@ namespace MASMA_proiect.agents
         {
             return MASMA_proiect.agents.Actions.COMPARE + "#" + a + "," + b;
         }
+
+        public static string serialize(string a, string b)
+        {
+            return MASMA_proiect.agents.Actions.COMPARE + "#" + a + "," + b;
+        }
     }
 }

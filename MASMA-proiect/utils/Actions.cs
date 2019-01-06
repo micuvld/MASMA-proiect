@@ -11,6 +11,10 @@ namespace MASMA_proiect.agents
         COMPARE,
         COMPARISON_RESULT,
         ENUMERATE,
-        ENUMARTION_RESULT
+        ENUMARTION_RESULT,
+        START_PARTITIONING,
+        PARTITION,
+        MERGE,
+        FINISH_MERGE
     }
 }
