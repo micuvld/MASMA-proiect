@@ -1,6 +1,8 @@
 ﻿using MASMA_proiect.agents;
+using MASMA_proiect.utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -11,7 +13,7 @@ namespace MASMA_Odd_Even
     {
         static void Main(string[] args)
         {
-            int[] array = { 2, 1, 8, 5, -32, -2321, 2,2,12,12,33,12, 321, 3, -21321};
+            int[] array = Utils.GenerateRandomArray(10, 100);
             int numberOfPhases;
             int numberOfAgents;
             bool isNumberOfElementsEven;
@@ -34,7 +36,7 @@ namespace MASMA_Odd_Even
             for (int i = 0; i < numberOfAgents; i++)
             {
                 ComparatorAgent ComparatorAgent = new MASMA_proiect.agents.ComparatorAgent();
-                string agentName = "comparatorAgent" + i;
+                string agentName = "ComparatorAgent" + i;
                 env.Add(ComparatorAgent, agentName);
 
                 comparatorsList.Add(agentName);
@@ -43,16 +45,19 @@ namespace MASMA_Odd_Even
 
             Console.WriteLine("Number of comparator agents = " + comparatorsList.Count);
             Console.WriteLine("Number of phases = " + numberOfPhases);
-            comparatorsList.ForEach(ag => Console.Write(ag));
 
+            MasterAgent masterAgent = new MasterAgent(numberOfPhases, array, comparatorsList, isNumberOfElementsEven, env);
+            env.Add(masterAgent, "MasterAgent");
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            masterAgent.Start();
 
-            MasterAgent MasterAgent = new MASMA_Odd_Even.MasterAgent(numberOfPhases, array, comparatorsList, isNumberOfElementsEven);
-            
-            env.Add(MasterAgent, "masterAgent");
-            MasterAgent.Start();
-
-            Console.WriteLine("Main started");
             env.WaitAll();
+            sw.Stop();
+            Console.WriteLine("\nEnumeration sort took {0} millis\n", sw.ElapsedMilliseconds);
+            Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
+            long totalBytesOfMemoryUsed = currentProcess.WorkingSet64;
+            Console.WriteLine("Bytes used: {0}\n", totalBytesOfMemoryUsed);
         }
     }
 }

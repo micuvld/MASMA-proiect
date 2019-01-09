@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ActressMas;
 using MASMA_Enumeration.agents;
 using MASMA_proiect.agents;
+using MASMA_proiect.utils;
 
 namespace MASMA_Enumeration
 {
     static class Program
     {
-        private static int noEnumAgents = 11;
-        private static int noComparatorAgents = 1000;
-        private static int[] arrayToSort = { 1, 8, 5, -32, -2321, 2, 12, 33, 321, 3, -21321 };
+        private static int noEnumAgents = 10;
+        private static int noComparatorAgents = 10;
+        private static int[] arrayToSort = Utils.GenerateRandomArray(10, 100);
 
         static void Main()
         {
@@ -22,37 +24,46 @@ namespace MASMA_Enumeration
             var env = new ActressMas.Environment();
             AgentsManager agentsManager = new AgentsManager();
 
-            List<Agent> enumerationAgents = new List<Agent>();
+            List<WorkerAgent> enumerationAgents = new List<WorkerAgent>();
             for (int i = 0; i < noEnumAgents; ++i)
             {
                 agentName = AgentType.ENUMERATOR.ToString() + i;
-                Agent enumeratorAgent = new EnumerationAgent(agentsManager);
+                WorkerAgent enumeratorAgent = new EnumerationAgent(agentsManager);
                 env.Add(enumeratorAgent, agentName);
                 enumerationAgents.Add(enumeratorAgent);
                 enumeratorAgent.Start();
             }
 
-            List<Agent> comparatorAgents = new List<Agent>();
+            List<WorkerAgent> comparatorAgents = new List<WorkerAgent>();
             for (int i = 0; i < noComparatorAgents; ++i)
             {
                 agentName = AgentType.COMPARATOR.ToString() + i;
-                Agent comparatorAgent = new ComparatorAgent();
+                WorkerAgent comparatorAgent = new ComparatorAgent();
                 env.Add(comparatorAgent, agentName);
+                comparatorAgents.Add(comparatorAgent);
                 comparatorAgent.Start();
             }
 
             agentName = AgentType.MASTER.ToString();
-            MasterAgent masterAgent = new MasterAgent(agentsManager, arrayToSort);
+            MasterAgent masterAgent = new MasterAgent(agentsManager, arrayToSort, env);
             env.Add(masterAgent, agentName);
 
-            Dictionary<AgentType, List<Agent>> agentTypeCounts = new Dictionary<AgentType, List<Agent>>();
+            Dictionary<AgentType, List<WorkerAgent>> agentTypeCounts = new Dictionary<AgentType, List<WorkerAgent>>();
             agentTypeCounts.Add(AgentType.ENUMERATOR, enumerationAgents);
             agentTypeCounts.Add(AgentType.COMPARATOR, comparatorAgents);
-            agentTypeCounts.Add(AgentType.MASTER, new List<Agent>() { masterAgent });
-            agentsManager.setAgents(agentTypeCounts);
+            agentTypeCounts.Add(AgentType.MASTER, new List<WorkerAgent>() { masterAgent });
+            agentsManager.SetAgents(agentTypeCounts);
 
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             masterAgent.Start();
+
             env.WaitAll();
+            sw.Stop();
+            Console.WriteLine("\nEnumeration sort took {0} millis\n", sw.ElapsedMilliseconds);
+            Process currentProcess = System.Diagnostics.Process.GetCurrentProcess();
+            long totalBytesOfMemoryUsed = currentProcess.WorkingSet64;
+            Console.WriteLine("Bytes used: {0}\n", totalBytesOfMemoryUsed);
         }
     }
 }

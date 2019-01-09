@@ -1,5 +1,6 @@
 ﻿using ActressMas;
 using MASMA_proiect.agents;
+using MASMA_proiect.utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MASMA_Parallel_Merge.agents
 {
-    public class MergerAgent : ActressMas.Agent
+    public class MergerAgent : WorkerAgent
     {
 
         private AgentsManager agentsManager;
@@ -28,92 +29,36 @@ namespace MASMA_Parallel_Merge.agents
 
         public override void Act(Message message)
         {
-            Console.WriteLine(message.Content);
-
-          
             string[] splittedMessage = message.Content.Split('#');
             string stringAction = splittedMessage[0];
             
             Enum.TryParse(stringAction, out Actions action);
             
             string[] arrayOfString = splittedMessage[1].Split(',');
-            int[] integerArray = Array.ConvertAll(arrayOfString, s => int.Parse(s));
+            int[] responseArray = Array.ConvertAll(arrayOfString, s => int.Parse(s));
 
             switch (action)
             {
                 case Actions.MERGE:
-                    if (message.Sender[0] == 'P')
+                    if (message.Sender[0] == 'P') //sender is a partitioner
                     {
-                        if (integerArray.Length == 2)
-                        {
-                            int firstValue = integerArray[0];
-                            int secondValue = integerArray[1];
-                            if (firstValue >= secondValue)
-                            {
-                                integerArray = new int[] { secondValue, firstValue };
-                            }
-                        }
-
-                        this.Send(getParentMerger(), Actions.MERGE + "#" + string.Join(",", integerArray));
+                        ComputeSimplePartition(responseArray);
                         return;
                     }
 
-                    if (this.firstPartition == null)
+                    UpdateLocalPartitions(responseArray);
+                    if (firstPartition != null && secondPartition != null)
                     {
-                        this.firstPartition = integerArray;
+                        StartMerging();
                     }
-                    else
-                    {
-                        this.secondPartition = integerArray;
-                        this.Send(agentsManager.getIdleAgent(AgentType.COMPARATOR), ComparatorAgent.serialize(firstPartition[0], secondPartition[0]));
-                        this.finalPartition = new int[firstPartition.Length + secondPartition.Length];
-                    }
+
                     break;
 
                 case Actions.COMPARISON_RESULT:
-                    if (firstPartition[firstPartitionIndex].Equals(integerArray[0]))
-                    {
-                        firstPartitionIndex++;
-                    } else
-                    {
-                        secondPartitionIndex++;
-                    }
-                    finalPartition[finalPartitionIndex++] = integerArray[0];
-
-                    if(firstPartitionIndex == firstPartition.Length)
-                    {
-                        for(int i = secondPartitionIndex; secondPartitionIndex < secondPartition.Length; secondPartitionIndex++)
-                        {
-                            finalPartition[finalPartitionIndex++] = secondPartition[secondPartitionIndex];
-                        }
-
-                        if (this.Name.Equals("M0"))
-                        {
-                            this.Send(AgentType.MASTER.ToString(), Actions.FINISH_MERGE + "#" + string.Join(",", finalPartition));
-                            return;
-                        }
-                            this.Send(getParentMerger(), Actions.MERGE + "#" + string.Join(",", finalPartition));
-                        return;
-                    }
-
-                    if (secondPartitionIndex == secondPartition.Length)
-                    {
-                        for (int i = firstPartitionIndex; firstPartitionIndex < firstPartition.Length; firstPartitionIndex++)
-                        {
-                            finalPartition[finalPartitionIndex++] = firstPartition[firstPartitionIndex];
-                        }
-
-                        if (this.Name.Equals("M0"))
-                        {
-                            this.Send(AgentType.MASTER.ToString(), Actions.FINISH_MERGE + "#" + string.Join(",", finalPartition));
-                            return;
-                        }
-                        this.Send(getParentMerger(), Actions.MERGE + "#" + string.Join(",", finalPartition));
-                        return;
-                    }
-                    this.Send(agentsManager.getIdleAgent(AgentType.COMPARATOR), ComparatorAgent.serialize(firstPartition[firstPartitionIndex], secondPartition[secondPartitionIndex]));
-
-
+                    DoMergingStep(responseArray);
+                    //send next two values for comparison
+                    this.Send(agentsManager.GetIdleAgent(AgentType.COMPARATOR), 
+                        ComparatorAgent.serialize(firstPartition[firstPartitionIndex], secondPartition[secondPartitionIndex]));
                     break;
 
                 default:
@@ -123,7 +68,92 @@ namespace MASMA_Parallel_Merge.agents
 
         }
 
-        public string getParentMerger()
+        private void StartMerging()
+        {
+            this.Send(agentsManager.GetIdleAgent(AgentType.COMPARATOR), ComparatorAgent.serialize(firstPartition[0], secondPartition[0]));
+            this.finalPartition = new int[firstPartition.Length + secondPartition.Length];
+        }
+
+        private void UpdateLocalPartitions(int[] partition)
+        {
+            if (this.firstPartition == null)
+            {
+                this.firstPartition = partition;
+            }
+            else
+            {
+                this.secondPartition = partition;
+
+            }
+        }
+
+        private void ComputeSimplePartition(int[] partition)
+        {
+            if (partition.Length == 2)
+            {
+                int firstValue = partition[0];
+                int secondValue = partition[1];
+                if (firstValue >= secondValue)
+                {
+                    partition = new int[] { secondValue, firstValue };
+                }
+            }
+
+            this.Send(GetParentMerger(), Utils.GenerateMessageContent(Actions.MERGE, string.Join(",", partition)));
+        }
+
+        private void DoMergingStep(int[] comparisonResult)
+        {
+            SetLowestElementInTheSortedArray(comparisonResult);
+
+            if (firstPartitionIndex == firstPartition.Length)
+            {
+                AppendRestOfPartition(secondPartitionIndex, secondPartition);
+                ContinueOrSendToMaster();
+                return;
+            }
+
+            if (secondPartitionIndex == secondPartition.Length)
+            {
+                AppendRestOfPartition(firstPartitionIndex, firstPartition);
+                ContinueOrSendToMaster();
+                return;
+            }
+        }
+
+        private void AppendRestOfPartition(int startIndex, int[] partition)
+        {
+            for (int i = startIndex; i < partition.Length; i++)
+            {
+                finalPartition[finalPartitionIndex++] = partition[i];
+            }
+        }
+
+        private void SetLowestElementInTheSortedArray(int[] comparisonResult)
+        {
+            if (firstPartition[firstPartitionIndex].Equals(comparisonResult[0]))
+            {
+                firstPartitionIndex++;
+            }
+            else
+            {
+                secondPartitionIndex++;
+            }
+
+            finalPartition[finalPartitionIndex++] = comparisonResult[0];
+        }
+
+        private void ContinueOrSendToMaster()
+        {
+            if (this.Name.Equals("M0"))
+            {
+                this.Send(AgentType.MASTER.ToString(), Utils.GenerateMessageContent(Actions.FINISH_MERGE, string.Join(",", finalPartition)));
+                return;
+            }
+            this.Send(GetParentMerger(), Utils.GenerateMessageContent(Actions.MERGE, string.Join(",", finalPartition)));
+        }
+
+        public string GetParentMerger()
         {
             int numberOfCurrentMerger = int.Parse(this.Name.Substring(1, this.Name.Length - 1));
             if(numberOfCurrentMerger % 2 == 0)

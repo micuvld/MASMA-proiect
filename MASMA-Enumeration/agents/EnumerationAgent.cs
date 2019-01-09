@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MASMA_proiect.agents;
+using MASMA_proiect.utils;
 
 namespace MASMA_Enumeration.agents
 {
@@ -36,26 +37,28 @@ namespace MASMA_Enumeration.agents
                     string indexAsString = splittedMessage[2];
                     theArray = Array.ConvertAll(theArrayAsString, s => int.Parse(s));
                     indexInArray = int.Parse(indexAsString);
+
                     currentElement = theArray[indexInArray];
-                    sendToWorkers(theArray, indexInArray);
+                    SendToWorkers(theArray, indexInArray);
                     break;
 
                 case Actions.COMPARISON_RESULT:
                     string[] comparisonResult = splittedMessage[1].Split(',');
-                    processResponse(comparisonResult, currentElement);
+                    ProcessResponse(comparisonResult, currentElement);
 
                     if (totalReplies == theArray.Length)
                     {
-                        string replyMessage = Actions.ENUMARTION_RESULT + "#" + currentElement + "#" + numbersLessThanCurrentElement;
-                        this.Send(agentsManager.getUniqueAgent(AgentType.MASTER), replyMessage);
-                        cleanup();
+                        string replyMessage = Utils.GenerateMessageContent(
+                            Actions.ENUMARTION_RESULT, currentElement.ToString(), numbersLessThanCurrentElement.ToString());
+                        this.Send(agentsManager.GetUniqueAgent(AgentType.MASTER), replyMessage);
+                        Cleanup();
                     }
 
                     break;
             }
         }
 
-        private void processResponse(string[] comparisonResult, int currentElement)
+        private void ProcessResponse(string[] comparisonResult, int currentElement)
         {
             int[] orderedNumbers = Array.ConvertAll(comparisonResult, s => int.Parse(s));
             totalReplies++;
@@ -65,23 +68,23 @@ namespace MASMA_Enumeration.agents
             }
         }
 
-        private void sendToWorkers(int[] theArray, int initialIndex)
+        private void SendToWorkers(int[] theArray, int initialIndex)
         {
             Dictionary<int, int> finalIndexes = new Dictionary<int, int>();
 
             for (int i = 0; i < theArray.Length; ++i)
             {
-                sendForComparison(theArray[initialIndex], theArray[i]);
+                SendForComparison(theArray[initialIndex], theArray[i]);
             }
         }
 
-        private void sendForComparison(int a, int b)
+        private void SendForComparison(int a, int b)
         {
-            string comparatorAgent = agentsManager.getIdleAgent(AgentType.COMPARATOR);
+            string comparatorAgent = agentsManager.GetIdleAgent(AgentType.COMPARATOR);
             this.Send(comparatorAgent, ComparatorAgent.serialize(a, b));
         }
 
-        private void cleanup()
+        private void Cleanup()
         {
             totalReplies = 0;
             numbersLessThanCurrentElement = 0;

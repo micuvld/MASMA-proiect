@@ -1,5 +1,6 @@
 ﻿using ActressMas;
 using MASMA_proiect.agents;
+using MASMA_proiect.utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MASMA_Parallel_Merge
 {
-    public class PartitionerAgent : ActressMas.Agent
+    public class PartitionerAgent : WorkerAgent
     {
         public override void Act(Message message)
         {
@@ -22,27 +23,27 @@ namespace MASMA_Parallel_Merge
             switch (action)
             {
                 case Actions.START_PARTITIONING:
-                    partition(arrayOfString, out firstPartition, out secondPartition);
-                    this.Send("P1", Actions.PARTITION + "#" + string.Join(",", firstPartition));
-                    this.Send("P2", Actions.PARTITION + "#" + string.Join(",", secondPartition));
+                    CreatePartitions(arrayOfString, out firstPartition, out secondPartition);
+                    this.Send("P1", Utils.GenerateMessageContent(Actions.PARTITION, string.Join(",", firstPartition)));
+                    this.Send("P2", Utils.GenerateMessageContent(Actions.PARTITION, string.Join(",", secondPartition)));
                     break;
                 case Actions.PARTITION:
                     if (arrayOfString.Length > 2)
                     {
-                        partition(arrayOfString, out firstPartition, out secondPartition);
-                        this.Send(getOddPartitioner(), Actions.PARTITION + "#" + string.Join(",", firstPartition));
-                        this.Send(getEvenPartitioner(), Actions.PARTITION + "#" + string.Join(",", secondPartition));
+                        CreatePartitions(arrayOfString, out firstPartition, out secondPartition);
+                        this.Send(GetOddPartitioner(), Utils.GenerateMessageContent(Actions.PARTITION, string.Join(",", firstPartition)));
+                        this.Send(GetEvenPartitioner(), Utils.GenerateMessageContent(Actions.PARTITION, string.Join(",", secondPartition)));
                         return;
                     }
 
-                    this.Send("M" + this.Name.Substring(1, this.Name.Length - 1), 
-                        Actions.MERGE + "#" + splittedMessage[1]);
+                    this.Send("M" + this.Name.Substring(1, this.Name.Length - 1),
+                        Utils.GenerateMessageContent(Actions.MERGE, splittedMessage[1]));
                     break;
 
             }
         }
 
-        public void splitArray(int[] initialArray, out int[] firstPartition, out int[] secondPartition)
+        public void SplitArray(int[] initialArray, out int[] firstPartition, out int[] secondPartition)
         {
             int midIndex = initialArray.Length / 2;
             if (initialArray.Length % 2 != 0)
@@ -54,18 +55,18 @@ namespace MASMA_Parallel_Merge
             secondPartition = initialArray.Skip(midIndex).Take(midIndex).ToArray();
         }
 
-        public void partition(string[] arrayOfStrings, out int[] firstPartition, out int[] secondPartition)
+        public void CreatePartitions(string[] arrayOfStrings, out int[] firstPartition, out int[] secondPartition)
         {
             int[] theArrayOfInts = Array.ConvertAll(arrayOfStrings, s => int.Parse(s));
-            splitArray(theArrayOfInts, out firstPartition, out secondPartition);
+            SplitArray(theArrayOfInts, out firstPartition, out secondPartition);
         }
 
-        public string getEvenPartitioner()
+        public string GetEvenPartitioner()
         {
             return "P" + (int.Parse(this.Name.Substring(1, this.Name.Length - 1)) * 2 + 2);
         }
 
-        public string getOddPartitioner()
+        public string GetOddPartitioner()
         {
             return "P" + (int.Parse(this.Name.Substring(1, this.Name.Length - 1)) * 2 + 1);
         }

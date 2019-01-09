@@ -10,10 +10,10 @@ namespace MASMA_proiect.agents
     public class AgentsManager
     {
         //add a mapping between agent type and agent name
-        private Dictionary<AgentType, List<Agent>> agents = new Dictionary<AgentType, List<Agent>>();
+        private Dictionary<AgentType, List<WorkerAgent>> agents = new Dictionary<AgentType, List<WorkerAgent>>();
         Random random = new Random();
 
-        public AgentsManager(Dictionary<AgentType, List<Agent>> agents)
+        public AgentsManager(Dictionary<AgentType, List<WorkerAgent>> agents)
         {
             this.agents = agents;
         }
@@ -21,26 +21,22 @@ namespace MASMA_proiect.agents
         public AgentsManager()
         { }
 
-        public string getIdleAgent(AgentType type)
+        public string GetIdleAgent(AgentType type)
         {
-            switch(type)
+            int agentNumber;
+            do
             {
-                case AgentType.COMPARATOR:
-                    int agentNumber = random.Next(agents[type].Count);
-                    return type.ToString() + agentNumber;
-                default:
-                    List<WorkerAgent> agentList = agents[type].ConvertAll<WorkerAgent>(a => (WorkerAgent)a);
-                    return agentList.Find(agent => agent.Idle).Name;                  
-            }
-            
+                agentNumber = random.Next(agents[type].Count);
+            } while (!agents[type][agentNumber].Idle);
+            return type.ToString() + agentNumber;
         }
 
-        public string getUniqueAgent(AgentType type)
+        public string GetUniqueAgent(AgentType type)
         {
             return type.ToString();
         }
 
-        public void setAgents(Dictionary<AgentType, List<Agent>> agents)
+        public void SetAgents(Dictionary<AgentType, List<WorkerAgent>> agents)
         {
             this.agents = agents;
         }

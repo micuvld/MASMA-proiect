@@ -7,39 +7,40 @@ using ActressMas;
 
 
 using MASMA_proiect.agents;
+using MASMA_proiect.utils;
 
 namespace MASMA_Odd_Even
 {
-    class MasterAgent : ActressMas.Agent
+    class MasterAgent : WorkerAgent
     {
 
-        int NumberOfPhases;
-        int[] array;
+        private int numberOfPhases;
+        private int[] array;
         public List<string> comparatorAgents;
-        int currentPhase = 1;
-        int numberOfReceivedMessages = 0;
-        bool isNumberOfElementsEven;
+        private int currentPhase = 1;
+        private int numberOfReceivedMessages = 0;
+        private bool isNumberOfElementsEven;
+        private ActressMas.Environment env;
 
-        public MasterAgent(int numberOfPhases, int[] array, List<string> agents, bool isNumberOfElementsEven)
+        public MasterAgent(int numberOfPhases, int[] array, List<string> agents, bool isNumberOfElementsEven, ActressMas.Environment env)
         {
-            this.NumberOfPhases = numberOfPhases;
+            this.numberOfPhases = numberOfPhases;
             this.array = array;
             this.comparatorAgents = agents;
             this.isNumberOfElementsEven = isNumberOfElementsEven;
+            this.env = env;
         }
 
         public override void Setup()
         {
             Console.WriteLine("Array sent to comparator agents!");
-            sendArrayToAgentDueToThePhase(currentPhase, isNumberOfElementsEven);
+            SendArrayToAgentDueToThePhase(currentPhase, isNumberOfElementsEven);
         }
 
         public override void Act(Message message)
         {
             string agentName = message.Sender;
-            int index = Int32.Parse(agentName.Replace("comparatorAgent", ""));
-
-            //Console.WriteLine("Message received from :" + agentName + " calculated index = " + index);
+            int index = Int32.Parse(agentName.Replace("ComparatorAgent", ""));
 
             numberOfReceivedMessages++;
 
@@ -56,7 +57,7 @@ namespace MASMA_Odd_Even
 
                     if (numberOfReceivedMessages == array.Length / 2)
                     {
-                        sendAndUpdateCurrentPhase();
+                        SendAndUpdateCurrentPhase();
                         numberOfReceivedMessages = 0;
                     }
                 }
@@ -67,7 +68,7 @@ namespace MASMA_Odd_Even
 
                     if (numberOfReceivedMessages == array.Length / 2 - 1)
                     {
-                        sendAndUpdateCurrentPhase();
+                        SendAndUpdateCurrentPhase();
                         numberOfReceivedMessages = 0;
                     }
                 }
@@ -81,7 +82,7 @@ namespace MASMA_Odd_Even
 
                     if (numberOfReceivedMessages == array.Length / 2)
                     {
-                        sendAndUpdateCurrentPhase();
+                        SendAndUpdateCurrentPhase();
                         numberOfReceivedMessages = 0;
                     }
                 }
@@ -92,68 +93,72 @@ namespace MASMA_Odd_Even
 
                     if (numberOfReceivedMessages == array.Length / 2)
                     {
-                        sendAndUpdateCurrentPhase();
+                        SendAndUpdateCurrentPhase();
                         numberOfReceivedMessages = 0;
                     }
                 }
             }
         }
 
-        void sendAndUpdateCurrentPhase()
+        void SendAndUpdateCurrentPhase()
         {
             currentPhase++;
 
             Console.WriteLine("Current phase: " + currentPhase);
-            Console.WriteLine(string.Join(",", array));
-            if (currentPhase <= NumberOfPhases)
+            if (currentPhase <= numberOfPhases)
             {
-                sendArrayToAgentDueToThePhase(currentPhase, isNumberOfElementsEven);
+                SendArrayToAgentDueToThePhase(currentPhase, isNumberOfElementsEven);
+            } else
+            {
+                Console.WriteLine("\nSorted array: " + string.Join(",", array));
+                env.StopAll();
             }
 
             numberOfReceivedMessages = 0;
         }
 
-        void sendArrayToAgentDueToThePhase(int phase, bool isEven)
+        void SendArrayToAgentDueToThePhase(int phase, bool isEven)
         {
             if (isEven)
             {
                 if (phase % 2 != 0)
                 {
-                    sendForOddPhase(0);
+                    SendForOddPhase(0);
                 }
                 else
                 {
-                    sendForEvenPhase(1);
+                    SendForEvenPhase(1);
                 }
             }
             else
             {
                 if (phase % 2 != 0)
                 {
-                    sendForOddPhase(0);
+                    SendForOddPhase(0);
                 }
                 else
                 {
-                    sendForEvenPhase(0);
+                    SendForEvenPhase(0);
                 }
             }
         }
 
-        void sendForOddPhase(int offset)
+        void SendForOddPhase(int offset)
         {
             for (int i = 0; i < comparatorAgents.Count - offset; i++)
             {
-                string message = MASMA_proiect.agents.Actions.COMPARE + "#" + array[2 * i] + "," + array[(2 * i) + 1];
+
+                string message = Utils.GenerateMessageContent(MASMA_proiect.agents.Actions.COMPARE, array[2 * i] + "," + array[(2 * i) + 1]);
                 Console.WriteLine("Message: " + message + " was sent to : " + comparatorAgents.ElementAt(i));
                 this.Send(comparatorAgents.ElementAt(i), message);
             }
         }
 
-        void sendForEvenPhase(int offset)
+        void SendForEvenPhase(int offset)
         {
             for (int i = 0; i < comparatorAgents.Count - offset; i++)
             {
-                string message = MASMA_proiect.agents.Actions.COMPARE + "#" + array[2 * i + 1] + "," + array[2 * i + 2];
+                string message = Utils.GenerateMessageContent(MASMA_proiect.agents.Actions.COMPARE, array[2 * i + 1] + "," + array[(2 * i) + 2]);
                 Console.WriteLine("Message: " + message + " was sent to : " + comparatorAgents.ElementAt(i));
                 this.Send(comparatorAgents.ElementAt(i), message);
             }

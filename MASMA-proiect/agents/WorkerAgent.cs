@@ -12,5 +12,11 @@ namespace MASMA_proiect.agents
         private bool idle = true;
 
         public bool Idle { get => idle; set => idle = value; }
+
+        public void Send(string receiver, string content, string conversationId = "")
+        {
+            Console.WriteLine(this.Name + " -> " + receiver + ": " + content);
+            base.Send(receiver, content, conversationId);
+        }
     }
 }

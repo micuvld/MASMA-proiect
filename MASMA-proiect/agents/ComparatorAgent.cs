@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ActressMas;
+using MASMA_proiect.utils;
 
 namespace MASMA_proiect.agents
 {
-    public class ComparatorAgent : ActressMas.Agent
+    public class ComparatorAgent : WorkerAgent
     {
         public override void Act(Message message)
         {
@@ -29,18 +30,18 @@ namespace MASMA_proiect.agents
                     sortedValues = secondValue + "," + firstValue;
                 }
 
-                this.Send(message.Sender, Actions.COMPARISON_RESULT + "#" + sortedValues);
+                this.Send(message.Sender, Utils.GenerateMessageContent(Actions.COMPARISON_RESULT, sortedValues));
             }
         }
 
         public static string serialize(int a, int b)
         {
-            return MASMA_proiect.agents.Actions.COMPARE + "#" + a + "," + b;
+            return Utils.GenerateMessageContent(MASMA_proiect.agents.Actions.COMPARE, + a + "," + b);
         }
 
         public static string serialize(string a, string b)
         {
-            return MASMA_proiect.agents.Actions.COMPARE + "#" + a + "," + b;
+            return Utils.GenerateMessageContent(MASMA_proiect.agents.Actions.COMPARE, a + "," + b);
         }
     }
 }
