@@ -10,6 +10,8 @@ namespace MASMA_proiect.agents
     {
         COMPARATOR,
         ENUMERATOR,
+        PARTITIONER,
+        MERGER,
         MASTER
     }
 }

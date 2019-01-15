@@ -36,7 +36,7 @@ namespace MASMA_Odd_Even
             for (int i = 0; i < numberOfAgents; i++)
             {
                 ComparatorAgent ComparatorAgent = new MASMA_proiect.agents.ComparatorAgent();
-                string agentName = "ComparatorAgent" + i;
+                string agentName = AgentType.COMPARATOR.ToString() + i;
                 env.Add(ComparatorAgent, agentName);
 
                 comparatorsList.Add(agentName);
@@ -47,7 +47,7 @@ namespace MASMA_Odd_Even
             Console.WriteLine("Number of phases = " + numberOfPhases);
 
             MasterAgent masterAgent = new MasterAgent(numberOfPhases, array, comparatorsList, isNumberOfElementsEven, env);
-            env.Add(masterAgent, "MasterAgent");
+            env.Add(masterAgent, AgentType.MASTER.ToString());
             Stopwatch sw = new Stopwatch();
             sw.Start();
             masterAgent.Start();

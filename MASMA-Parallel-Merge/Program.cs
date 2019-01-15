@@ -15,7 +15,7 @@ namespace MASMA_Parallel_Merge
     {
         static void Main()
         {
-            int[] arrayToSort = Utils.GenerateRandomArray(10, 100);
+            int[] arrayToSort = new int[] { 6, 2, 9, 3, 5, 4 };//Utils.GenerateRandomArray(4, 100);
             int noComparatorAgents = 100;
             var env = new ActressMas.Environment();
 
@@ -26,7 +26,8 @@ namespace MASMA_Parallel_Merge
             for (int i = 0; i < noComparatorAgents; ++i)
             {
                 string agentName = AgentType.COMPARATOR.ToString() + i;
-                Agent comparatorAgent = new ComparatorAgent();
+                WorkerAgent comparatorAgent = new ComparatorAgent();
+                comparatorAgents.Add(comparatorAgent);
                 env.Add(comparatorAgent, agentName);
                 comparatorAgent.Start();
             }

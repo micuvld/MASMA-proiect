@@ -15,7 +15,7 @@ namespace MASMA_proiect.agents
 
         public void Send(string receiver, string content, string conversationId = "")
         {
-            Console.WriteLine(this.Name + " -> " + receiver + ": " + content);
+            //Console.WriteLine(this.Name + " -> " + receiver + ": " + content);
             base.Send(receiver, content, conversationId);
         }
     }

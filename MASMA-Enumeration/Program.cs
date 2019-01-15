@@ -13,9 +13,9 @@ namespace MASMA_Enumeration
 {
     static class Program
     {
-        private static int noEnumAgents = 10;
-        private static int noComparatorAgents = 10;
-        private static int[] arrayToSort = Utils.GenerateRandomArray(10, 100);
+        private static int noEnumAgents = 1000;
+        private static int noComparatorAgents = 1000;
+        private static int[] arrayToSort = Utils.GenerateRandomArray(10000, 100);
 
         static void Main()
         {

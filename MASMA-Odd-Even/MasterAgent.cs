@@ -40,7 +40,7 @@ namespace MASMA_Odd_Even
         public override void Act(Message message)
         {
             string agentName = message.Sender;
-            int index = Int32.Parse(agentName.Replace("ComparatorAgent", ""));
+            int index = Int32.Parse(agentName.Replace(AgentType.COMPARATOR.ToString(), ""));
 
             numberOfReceivedMessages++;
 
@@ -149,7 +149,6 @@ namespace MASMA_Odd_Even
             {
 
                 string message = Utils.GenerateMessageContent(MASMA_proiect.agents.Actions.COMPARE, array[2 * i] + "," + array[(2 * i) + 1]);
-                Console.WriteLine("Message: " + message + " was sent to : " + comparatorAgents.ElementAt(i));
                 this.Send(comparatorAgents.ElementAt(i), message);
             }
         }
@@ -159,7 +158,6 @@ namespace MASMA_Odd_Even
             for (int i = 0; i < comparatorAgents.Count - offset; i++)
             {
                 string message = Utils.GenerateMessageContent(MASMA_proiect.agents.Actions.COMPARE, array[2 * i + 1] + "," + array[(2 * i) + 2]);
-                Console.WriteLine("Message: " + message + " was sent to : " + comparatorAgents.ElementAt(i));
                 this.Send(comparatorAgents.ElementAt(i), message);
             }
         }
